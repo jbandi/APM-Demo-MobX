@@ -1,21 +1,22 @@
 <div class='row'>
   <div class='col-md-4'>
-    <pm-product-list
-    [displayCode]="displayCode$ | async"
-    [products]="products$ | async"
-    [selectedProduct]="selectedProduct$ | async"
-	[errorMessage]="errorMessage$ | async"
-    (checked)="checkChanged($event)"
-    (initializeNewProduct)="(newProduct())"
-    (selected)="productSelected($event)"></pm-product-list>
+    <pm-product-list *mobxAutorun="{ detach: true }"
+                     [displayCode]="showProductCode"
+                     [products]="products"
+                     [selectedProduct]="currentProduct"
+                     [errorMessage]="errorMessage"
+                     (checked)="checkChanged($event)"
+                     (selected)="productSelected($event)"
+                     (initializeNewProduct)="(newProduct())"
+    ></pm-product-list>
   </div>
   <div class='col-md-8'>
-    <pm-product-edit
-    [selectedProduct]="selectedProduct$ | async"
-	[errorMessage]="errorMessage$ | async"
-    (clearCurrent)="clearProduct()"
-    (update)="updateProduct($event)"
-    (delete)="deleteProduct($event)"
-    (create)="saveProduct($event)"></pm-product-edit>
+    <pm-product-edit *mobxAutorun
+      [selectedProduct]="currentProduct"
+      [errorMessage]="errorMessage"
+      (clearCurrent)="clearProduct()"
+      (update)="updateProduct($event)"
+      (delete)="deleteProduct($event)"
+      (create)="saveProduct($event)"></pm-product-edit>
   </div>
 </div>
