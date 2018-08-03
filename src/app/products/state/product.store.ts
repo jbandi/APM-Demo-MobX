@@ -6,12 +6,12 @@ import { action, observable, runInAction } from 'mobx';
 @Injectable({providedIn: 'root'})
 export class ProductStore {
   @observable showProductCode = true;
-  @observable.shallow products: Product[] = [];
+  // @observable.shallow products: Product[] = [];
+  readonly products = observable.array<Product>([], {deep: false});
   @observable.ref currentProduct: Product;
   @observable errorMessage = '';
 
-  constructor(private productService: ProductService) {
-  }
+  constructor(private productService: ProductService) {}
 
   @action
   toggleProductCode() {
@@ -42,7 +42,8 @@ export class ProductStore {
   async loadProducts() {
     try {
       const products = await this.productService.getProducts().toPromise();
-      runInAction(() => this.products = products);
+      runInAction(() => this.products.replace(products));
+      // runInAction(() => this.products = products);
     }
     catch (error) {
       runInAction(() => this.errorMessage = error);
@@ -52,8 +53,8 @@ export class ProductStore {
   async updateProduct(product) {
     try {
       const updatedProduct = await this.productService.updateProduct(product).toPromise();
+      const index = this.products.findIndex(p => p.id === product.id);
       runInAction(() => {
-        const index = this.products.findIndex(p => p.id === product.id);
         this.products[index] = updatedProduct;
       });
     }
@@ -81,7 +82,8 @@ export class ProductStore {
       await this.productService.deleteProduct(product.id);
       const index = this.products.indexOf(product);
       runInAction(() => {
-        this.products.splice(index, 1);
+        // this.products.splice(index, 1);
+        this.products.remove(product);
         this.currentProduct = undefined;
       });
     }
